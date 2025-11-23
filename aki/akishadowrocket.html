@@ -1,38 +1,275 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AkiShadowrocket</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>YuuCloud 悠雨云</title>
+  <style>
+    /* 基本風格 */
+    :root{
+      --bg:#000000;
+      --text:#f7f8fa;
+      --muted:#c7ccd1;
+      --accent:#00d1ff; /* 高對比但優雅的青藍 */
+      --card-bg: rgba(255,255,255,0.03);
+      --glass: rgba(255,255,255,0.04);
+      --radius:12px;
+      --maxw:1100px;
+    }
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:Inter, "Helvetica Neue", Arial, "PingFang SC", "Noto Sans", sans-serif; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+    a{color:inherit;text-decoration:none;}
+    .wrap{max-width:var(--maxw);margin:0 auto;padding:32px;}
+    /* 區塊通用：每一頁滿屏 */
+    section.page{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:48px 20px;
+      box-sizing:border-box;
+      scroll-snap-align:start;
+    }
+    main{scroll-snap-type: y mandatory; overflow-y:auto; height:100vh;}
+    /* 第一頁：Hero */
+    .hero{
+      text-align:center;
+      width:100%;
+      max-width:900px;
+      padding:48px;
+      border-radius:20px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      box-shadow: 0 6px 30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+    .brand-title{
+      font-size:48px;
+      letter-spacing:4px;
+      margin:0 0 12px 0;
+      font-weight:700;
+      text-transform:uppercase; /* 强制大写 */
+    }
+    .brand-sub{
+      color:var(--muted);
+      font-size:18px;
+      margin-bottom:28px;
+    }
+    .cta{
+      display:inline-block;
+      background:linear-gradient(90deg,var(--accent),#7ff3ff);
+      color:#001219;
+      padding:14px 26px;
+      border-radius:999px;
+      font-weight:700;
+      font-size:16px;
+      box-shadow: 0 8px 30px rgba(0,209,255,0.12);
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+    .cta:hover{ transform:translateY(-4px); box-shadow: 0 18px 40px rgba(0,209,255,0.16); }
 
-        pre {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-    </style>
+    /* 第二頁：左右對稱 */
+    .two-col{
+      width:100%;
+      max-width:1100px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:36px;
+      align-items:stretch;
+      padding:18px;
+    }
+    .module{
+      background:var(--card-bg);
+      border-radius:var(--radius);
+      padding:28px;
+      border:1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+    }
+    .module h3{
+      margin:0 0 12px 0;
+      font-size:20px;
+      color:var(--accent);
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .module p{ margin:0;color:var(--muted); line-height:1.6; font-size:16px; }
+
+    /* 第三頁：线路模块 */
+    .grid-2{
+      width:100%;
+      max-width:1100px;
+      display:grid;
+      grid-template-columns: repeat(2,1fr);
+      gap:22px;
+      padding:18px;
+    }
+    .line-card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:14px;
+      padding:20px;
+      border:1px solid rgba(255,255,255,0.04);
+      min-height:120px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+    .line-card h4{ margin:0 0 8px 0; color:var(--accent); font-size:18px; }
+    .line-card p{ margin:0; color:var(--muted); font-size:15px; line-height:1.6; }
+
+    /* 第四頁：免责声明 */
+    .notice{
+      width:100%;
+      max-width:900px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:14px;
+      padding:28px;
+      border:1px solid rgba(255,255,255,0.04);
+      color:var(--muted);
+      line-height:1.8;
+      font-size:15px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    }
+    .notice h3{ color:var(--accent); margin-top:0; }
+
+    /* 一些響應式和微調 */
+    @media (max-width:900px){
+      .brand-title{ font-size:32px; }
+      .two-col{ grid-template-columns: 1fr; gap:18px; }
+      .grid-2{ grid-template-columns: 1fr; }
+      .hero{ padding:28px; border-radius:12px; }
+    }
+
+    /* 滾動提示 */
+    .scroll-hint{
+      position:fixed;
+      right:18px;
+      bottom:18px;
+      background:var(--glass);
+      border:1px solid rgba(255,255,255,0.04);
+      padding:8px 12px;
+      border-radius:999px;
+      color:var(--muted);
+      font-size:13px;
+      backdrop-filter: blur(6px);
+    }
+    /* 小標題 */
+    .section-title{ text-align:center; color:var(--text); font-size:26px; margin:0 0 18px 0; letter-spacing:1px; }
+  </style>
 </head>
 <body>
-    <pre>
-ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpWa3hmZmFAaG9zdC5oazEudW5sZWcxdC50ZWNoOjU2MDE1#%F0%9F%87%AD%F0%9F%87%B0Unleg1t!_HK1_HK
-ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTptUHEwOW96WmtJalZYWWlEMWVQTTRSYkR2N0VpU2thVVAvUHdsa0VKY3lvPUBob3N0LmhraWVwbHgxMC51bmxlZzF0LnRlY2g6MzkwMDM#Unleg1t!_HKIEPL1_HK
-ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpWa3hmZmFAaG9zdC50dzEudW5sZWcxdC50ZWNoOjU2MDI0#%F0%9F%87%B9%F0%9F%87%BCUnleg1t!_ROC1_Taipei
-ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpWa3hmZmFAaG9zdC50dzIudW5sZWcxdC50ZWNoOjU2MDIy#%F0%9F%87%B9%F0%9F%87%BCUnleg1t!_ROC2_Taipei
-ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpWa3hmZmFAaG9zdC5qcDEudW5sZWcxdC50ZWNoOjU2MDMz#%F0%9F%87%AF%F0%9F%87%B5Unleg1t!_JP1_Tokyo
-ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpWa3hmZmFAaG9zdC5qcDIudW5sZWcxdC50ZWNoOjU2MDM2#%F0%9F%87%AF%F0%9F%87%B5Unleg1t!_JP2_Tokyo
-ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpWa3hmZmFAaG9zdC5qcDMudW5sZWcxdC50ZWNoOjU2MDM4#%F0%9F%87%AF%F0%9F%87%B5Unleg1t!_JP3_Tokyo
-ss://MjAyMi1ibGFrZTMtY2hhY2hhMjAtcG9seTEzMDU6TU85TERZeWc2ZTNUL01ITnRqMUliT25ER1lDajE0L01mUnZ3TDN4SWJBYz1AaG9zdC4xMzc5anB0ZXN0LnVubGVnMXQudGVjaDo0NTUxNw#%F0%9F%87%AF%F0%9F%87%B5Unleg1t!_JPIEPL1_Tokyo
-hysteria2://fd745669@156.246.88.100:443?peer=www.bing.com&insecure=1&obfs=none#Unleg1t!_JPHy2_1_Tokyo
-ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpWa3hmZmFAaG9zdC5zZzEudW5sZWcxdC50ZWNoOjU2MDQ1#%F0%9F%87%B8%F0%9F%87%ACUnleg1t!_SG1_SG
-ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpWa3hmZmFAaG9zdC5teTEudW5sZWcxdC50ZWNoOjU2MDY3#%F0%9F%87%B2%F0%9F%87%BEUnleg1t_Malaysia1_Selango
-ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpWa3hmZmFAaG9zdC50cjEudW5sZWcxdC50ZWNoOjU2MDk4#%F0%9F%87%B9%F0%9F%87%B7Unleg1t_Turkey1_Istanbul
-ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpWa3hmZmFAaG9zdC51azEudW5sZWcxdC50ZWNoOjU2MDY1#%F0%9F%87%AC%F0%9F%87%A7Unleg1t!_UK1_London
-vmess://YXV0bzo1NTRiODY1Yi0xY2JiLTQyNzctZDEwYS00YWU5ZDM0MWZhOGFAaG9zdC5zdGFibGUudXMudW5sZWcxdC50ZWNoOjM1ODc1?remarks=%F0%9F%87%BA%F0%9F%87%B8Unleg1t_US1_STABLE_NY&path=/554b865b&obfs=websocket&alterId=0
-hysteria2://123456@74.121.150.150:443?peer=www.bing.com&insecure=1&obfs=none&downmbps=200mbps#Unleg1t!_US2_HY2_NY
-ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpWa3hmZmFAaG9zdC5hcjEudW5sZWcxdC50ZWNoOjU2MTAw#%F0%9F%87%A6%F0%9F%87%B7Unleg1t!_Argentina1_Buenos_Aires
+  <main>
+    <!-- 第一页 -->
+    <section class="page" id="page-1" aria-label="首頁">
+      <div class="wrap">
+        <div class="hero" role="banner" aria-labelledby="main-title">
+          <h1 id="main-title" class="brand-title">YuuCloud 悠雨云☁️</h1>
+          <div class="brand-sub">轻松跨境，轻松电商</div>
+          <a class="cta" href="https://yuucloud.live" target="_blank" rel="noopener noreferrer">立刻选购</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 第二页 -->
+    <section class="page" id="page-2" aria-label="特色">
+      <div class="wrap">
+        <h2 class="section-title">服务特色</h2>
+        <div class="two-col" role="region" aria-label="服務模塊">
+          <div class="module" style="transform:translateY(0);">
+            <h3>🌍 全球加速网络</h3>
+            <p>覆盖全球的高速节点，保障您的跨境业务访问畅通无阻。无论电商、平台登录或内容分发，都有稳定低延迟的接入体验。</p>
+          </div>
+
+          <div class="module" style="transform:translateY(0);">
+            <h3>🔒 多重安全防护</h3>
+            <p>全链路加密，采用现今的混淆算法，保证隐私安全。结合多层防护策略，降低被探测或攻击的风险，提升运营稳定性与合规性。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 第三页：线路 -->
+    <section class="page" id="page-3" aria-label="线路">
+      <div class="wrap">
+        <h2 class="section-title">线路</h2>
+        <div class="grid-2" role="list">
+          <div class="line-card" role="listitem" aria-label="特惠线路">
+            <div>
+              <h4>💡 特惠线路</h4>
+              <p>高性价比线路，满足日常跨境访问与电商需求。适合预算敏感但需要稳定连通性的场景。</p>
+            </div>
+          </div>
+
+          <div class="line-card" role="listitem" aria-label="静态住宅宽带">
+            <div>
+              <h4>🏠 静态住宅宽带</h4>
+              <p>真实住宅宽带IP，提升账号安全性，适合多平台运营。更贴合平台常规访问行为，降低风控概率。</p>
+            </div>
+          </div>
+
+          <div class="line-card" role="listitem" aria-label="优质服务器">
+            <div>
+              <h4>🖥️ 优质服务器</h4>
+              <p>全球多地高性能节点，支持弹性扩展，保障业务稳定与高速访问。适合流量高峰与复杂业务场景。</p>
+            </div>
+          </div>
+
+          <div class="line-card" role="listitem" aria-label="IEPL/IPLC专线">
+            <div>
+              <h4>🔗 IEPL/ IPLC 专线</h4>
+              <p>国际专线 IEPL/IPLC，点对点高速直连，保障数据安全与传输效率。适合对延迟与带宽有严格要求的企业客户。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 第四页：免责声明 -->
+    <section class="page" id="page-4" aria-label="免责声明">
+      <div class="wrap">
+        <div class="notice" role="document" aria-labelledby="notice-title">
+          <h3 id="notice-title">免责声明</h3>
+
+          <p>⚖️ <strong>法律合规</strong><br>
+          用户在使用本服务时，应当遵守所在国家和地区的相关法律法规。本服务仅供合法用途，不得用于任何违法违规活动。</p>
+
+          <p>🛡️ <strong>服务说明</strong><br>
+          本服务提供的网络加速、线路优化等功能，旨在改善用户的网络体验。用户需自行承担使用风险，我们不对因使用本服务而产生的任何损失承担责任。</p>
+
+          <p>📋 <strong>使用限制</strong><br>
+          禁止利用本服务进行恶意攻击、传播违法内容、侵犯他人权益等行为。一经发现，我们有权立即终止服务并保留追究法律责任的权利。</p>
+
+          <p>💰 <strong>退款规则</strong><br>
+          由于产品性质的特殊性，大多数情况下不能退款，如有需求，请发送工单至客服微信。</p>
+
+          <p>🔒 <strong>隐私保护</strong><br>
+          我们承诺保护用户隐私，不会主动收集或泄露用户的个人信息。但用户需自行确保在使用过程中不泄露敏感信息。</p>
+
+          <p>📞 <strong>争议解决</strong><br>
+          如有争议，双方应友好协商解决。协商不成的，提交至服务提供方所在地有管辖权的人民法院解决。</p>
+
+          <p style="margin-top:12px;"><strong>重要提醒：</strong> 使用本服务即表示您已阅读、理解并同意遵守上述条款。如不同意，请勿使用本服务。本声明的最终解释权归悠雨所有。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="scroll-hint" aria-hidden="true">上下滚动以查看更多 • © YuuCloud</div>
+
+  <script>
+    // 平滑滚动（對鍵盤/滾動體驗做小優化）
+    (function(){
+      // 若需要可按 PageUp/PageDown 或箭頭鍵跳頁（可選）
+      document.addEventListener('keydown', (e) => {
+        const pages = Array.from(document.querySelectorAll('section.page'));
+        if(!pages.length) return;
+        const vh = window.innerHeight;
+        if(e.key === 'PageDown' || e.key === 'ArrowDown') {
+          window.scrollBy({ top: vh, behavior: 'smooth' });
+        } else if(e.key === 'PageUp' || e.key === 'ArrowUp') {
+          window.scrollBy({ top: -vh, behavior: 'smooth' });
+        }
+      });
+      // iOS / touch smoothing via CSS already handled by browser
+    })();
+  </script>
 </body>
 </html>
